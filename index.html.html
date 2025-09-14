@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>InvestMore StepUp SIP Calculator</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f6fa;
+      color: #333;
+    }
+    header {
+      background-color: #2d3757;
+      color: #fff;
+      padding: 20px 40px;
+      display: flex;
+      align-items: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+    .logo {
+      width: 60px;
+      height: 60px;
+      background-color: #ff8c42;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 20px;
+      font-size: 30px;
+      color: white;
+      font-weight: bold;
+    }
+    .logo span { /* initials IM */ }
+    h1.site-title {
+      font-size: 28px;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 40px auto;
+      background-color: white;
+      padding: 30px 40px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    .intro, .section {
+      margin-bottom: 25px;
+      line-height: 1.6;
+    }
+    h2 {
+      color: #2d3757;
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-size: 16px;
+      color: #444;
+    }
+    input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    input[type="number"]:focus {
+      border-color: #ff8c42;
+      outline: none;
+    }
+    button.calc-btn {
+      margin-top: 25px;
+      padding: 12px 25px;
+      font-size: 18px;
+      background-color: #ff8c42;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    button.calc-btn:hover {
+      background-color: #e6762d;
+    }
+    .summary {
+      margin-top: 25px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #2d3757;
+    }
+    table {
+      width: 100%;
+      margin-top: 30px;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: right;
+    }
+    th {
+      background-color: #f1f1f1;
+      color: #2d3757;
+    }
+    tbody tr:nth-child(even) {
+      background-color: #fafbfc;
+    }
+    .footer {
+      margin: 40px 0;
+      text-align: center;
+      color: #777;
+      font-size: 14px;
+    }
+    .mutual-funds {
+      margin-top: 40px;
+      background-color: #eef2f7;
+      padding: 20px;
+      border-radius: 6px;
+    }
+    .mutual-funds h2 {
+      color: #2d3757;
+    }
+    .fund-list {
+      list-style: none;
+      padding-left: 0;
+    }
+    .fund-list li {
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo"><span>IM</span></div>
+    <h1 class="site-title">InvestMore StepUp SIP Calculator</h1>
+  </header>
+
+  <div class="container">
+
+    <div class="intro">
+      <h2>Why Start a SIP?</h2>
+      <p>
+        Starting a SIP (Systematic Investment Plan) early helps you benefit from the power of compounding — small, consistent investments grow exponentially over time. It brings discipline, reduces timing risk (you invest every month), and smooths out market volatility. Plus, starting early means you need to invest less or take fewer risks to reach your goals.
+      </p>
+      <p>
+        Step‑Up SIP takes this further by increasing your monthly investment periodically (usually annually). This helps you keep pace with inflation, growing income, or changing goals. Over time, your investment contributions increase, your corpus grows more, and you get a stronger cushion against rising prices.
+      </p>
+    </div>
+
+    <div class="section">
+      <h2>How Step‑Up SIP Works</h2>
+      <ol>
+        <li>You select an initial monthly SIP amount you can afford now.</li>
+        <li>You decide a step‑up rate (e.g. 5‑15%) to increase SIP each year.</li>
+        <li>You choose expected annual return rate (nominal) and an inflation rate to compute real value.</li>
+        <li>Each year, your monthly investment increases by the chosen step‑up percentage.</li>
+        <li>Contributions are made every month; you get both nominal growth and inflation‑adjusted (real) growth, along with year‑wise visibility of invested vs returns.</li>
+      </ol>
+    </div>
+
+    <div class="section">
+      <h2>Calculator Inputs</h2>
+      <label>
+        Initial Monthly SIP Amount (₹):
+        <input type="number" id="initialSIP" value="5000" min="0">
+      </label>
+      <label>
+        Annual Step‑Up %:
+        <input type="number" id="stepUpPercent" value="10" min="0">
+      </label>
+      <label>
+        Expected Annual Return % (nominal):
+        <input type="number" id="annualReturn" value="12" min="0">
+      </label>
+      <label>
+        Investment Duration (Years):
+        <input type="number" id="years" value="20" min="1">
+      </label>
+      <label>
+        Expected Inflation Rate %:
+        <input type="number" id="inflationRate" value="5" min="0">
+      </label>
+      <button class="calc-btn" onclick="calculateSIP()">Calculate</button>
+    </div>
+
+    <div class="summary" id="summary"></div>
+
+    <canvas id="pieChart" style="max-width:400px; margin: auto; display: none;"></canvas>
+
+    <table id="yearlyTable" style="display: none;">
+      <thead>
+        <tr>
+          <th>Month‑Year</th>
+          <th>Monthly SIP (₹)</th>
+          <th>Cumulative Investment (₹)</th>
+          <th>Corpus (Nominal ₹)</th>
+          <th>Corpus (Real ₹)</th>
+          <th>Returns (Nominal ₹)</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+
+    <div class="mutual-funds">
+      <h2>Suggested Mutual Funds Based on Recent Returns</h2>
+      <ul class="fund-list">
+        <li>Quant Small Cap Fund (5‑yr annualised ~50.18%) :contentReference[oaicite:0]{index=0}</li>
+        <li>Quant Infrastructure Fund (5‑yr annualised ~44.20%) :contentReference[oaicite:1]{index=1}</li>
+        <li>Quant ELSS Tax Saver Fund (5‑yr annualised ~39.18%) :contentReference[oaicite:2]{index=2}</li>
+        <li>Nippon India Small Cap Fund (~38.93%) :contentReference[oaicite:3]{index=3}</li>
+        <li>Motilal Oswal Midcap Fund (5‑yr ~35‑38%) :contentReference[oaicite:4]{index=4}</li>
+        <li>Franklin Build India Fund (~34.25% 5‑yr) :contentReference[oaicite:5]{index=5}</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>How to Use</h2>
+      <ul>
+        <li>Enter the monthly SIP you can invest now.</li>
+        <li>Select how much you want to increase it annually (step‑up %).</li>
+        <li>Enter expected annual nominal return (based on mutual funds or your estimate) and inflation rate to adjust for real value.</li>
+        <li>Choose investment duration in years.</li>
+        <li>Click “Calculate” to see year/month wise table, nominal vs real corpus, and a pie chart showing invested vs returns.</li>
+      </ul>
+    </div>
+
+  </div> <!-- container -->
+
+  <div class="footer">
+    &copy; 2025 InvestMore Financial Tools. All rights reserved.
+  </div>
+
+<script>
+  function calculateSIP() {
+    const P0 = parseFloat(document.getElementById('initialSIP').value) || 0;
+    const stepUpPct = parseFloat(document.getElementById('stepUpPercent').value) / 100 || 0;
+    const annualReturnPct = parseFloat(document.getElementById('annualReturn').value) / 100 || 0;
+    const years = parseInt(document.getElementById('years').value) || 0;
+    const inflationPct = parseFloat(document.getElementById('inflationRate').value) / 100 || 0;
+
+    const r_month = Math.pow(1 + annualReturnPct, 1/12) - 1;
+
+    let cumulativeInvestment = 0;
+    let cumulativeCorpusNominal = 0;
+
+    const tableBody = document.getElementById('tableBody');
+    tableBody.innerHTML = '';
+
+    const pieData = { invested: 0, returns: 0 };
+
+    const start = new Date();
+    for (let yr = 0; yr < years; yr++) {
+      const sipThisYear = P0 * Math.pow(1 + stepUpPct, yr);
+
+      for (let m = 0; m < 12; m++) {
+        const currentMonth = start.getMonth() + m + yr * 12;
+        const date = new Date(start.getFullYear(), start.getMonth() + yr, 1);
+        date.setMonth(start.getMonth() + yr + m);
+        const monthYearStr = date.toLocaleString('default', { month: 'short' }) + '‑' + date.getFullYear();
+
+        cumulativeInvestment += sipThisYear;
+
+        const monthsRemaining = (years * 12) - ((yr * 12) + m + 1);
+        const fv = sipThisYear * Math.pow(1 + r_month, monthsRemaining);
+        cumulativeCorpusNominal += fv;
+
+        const cumulativeCorpusReal = cumulativeCorpusNominal / Math.pow(1 + inflationPct, ((yr * 12 + m + 1)/12));
+
+        const returnsNominal = cumulativeCorpusNominal - cumulativeInvestment;
+
+        // add a row per month for more granularity
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${monthYearStr}</td>
+          <td>₹${sipThisYear.toFixed(2)}</td>
+          <td>₹${cumulativeInvestment.toFixed(2)}</td>
+          <td>₹${cumulativeCorpusNominal.toFixed(2)}</td>
+          <td>₹${cumulativeCorpusReal.toFixed(2)}</td>
+          <td>₹${returnsNominal.toFixed(2)}</td>
+        `;
+        tableBody.appendChild(row);
+      }
+    }
+
+    pieData.invested = cumulativeInvestment;
+    pieData.returns = cumulativeCorpusNominal - cumulativeInvestment;
+
+    document.getElementById('summary').innerHTML = `
+      Total Invested (Nominal): ₹${cumulativeInvestment.toFixed(2)}<br>
+      Estimated Corpus (Nominal): ₹${cumulativeCorpusNominal.toFixed(2)}<br>
+      Estimated Corpus (Real, inflation‑adjusted): ₹${(cumulativeCorpusNominal / Math.pow(1 + inflationPct, years)).toFixed(2)}<br>
+      Total Returns (Nominal): ₹${pieData.returns.toFixed(2)}
+    `;
+
+    // Pie chart
+    const pieCanvas = document.getElementById('pieChart');
+    pieCanvas.style.display = 'block';
+    const ctx = pieCanvas.getContext('2d');
+    if (window.pieChartObj) window.pieChartObj.destroy();
+    window.pieChartObj = new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: ['Total Invested', 'Estimated Returns'],
+        datasets: [{
+          data: [pieData.invested, pieData.returns > 0 ? pieData.returns : 0],
+          backgroundColor: ['#2d3757', '#ff8c42'],
+          hoverOffset: 4
+        }]
+      },
+      options: {
+        plugins: {
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const label = context.label || '';
+                const value = context.raw || 0;
+                return label + ': ₹' + value.toFixed(2);
+              }
+            }
+          }
+        }
+      }
+    });
+
+    document.getElementById('yearlyTable').style.display = 'table';
+  }
+</script>
+
+</body>
+</html>
